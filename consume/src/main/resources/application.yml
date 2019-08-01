@@ -1,0 +1,15 @@
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://localhost:8761/eureka/
+server:
+  port: 8764
+spring:
+  application:
+    name: service-ribbon
+#暴露所有节点DashBoard监控用的
+management:
+  endpoints:
+    web:
+      exposure:
+        include: "*"

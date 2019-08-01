@@ -1,0 +1,87 @@
+#
+#spring:
+##  profiles:          #代表引入一个名为path_route的文件
+##    active: path_route
+#  profiles:
+#    active: elapse_route
+#  application:
+#    name: gateway
+#spring:
+#  application:
+#    name: gateway
+#  cloud:
+#    gateway:
+#      discovery:
+#        locator:
+#          enabled: true   #true开启一个默认的路由，比如以/service-hi/*的请求路径被路由转发到服务名为service-hi的服务上
+#          lowerCaseServiceId: true    #注册时服务名为大写，将请求路径上的服务名配置为小写
+#      routes:
+#      - id: service-hi
+#        uri: lb://SERVICE-HI
+#        predicates:
+#          - Path=/demo/**
+#        filters:
+#          - StripPrefix=1   #用于去掉/demo前缀 1代表去掉第一个前缀以此类推
+server:
+  port: 5001
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+##---代表另起一个新的文件
+#---
+#spring:
+#  cloud:
+#    gateway:
+#      discovery:
+#        locator:
+#          enabled: true
+#      routes:
+#      - id: 666
+#        uri: http://httpbin.org:80/
+#        predicates:
+#        - Path=/foo/**
+#        filters:
+#        - RewritePath=/foo/(?<segment>.*), /get  #重写请求路径
+#        #- RewritePath=/foo/(?<segment>.*), /$\{segment}
+#  profiles: path_route    #文件名
+
+
+##自定义的Filter工厂
+#
+#---
+#spring:
+#  cloud:
+#    gateway:
+#      routes:
+#      - id: elapse_route
+#        uri: http://httpbin.org:80/get
+#        filters:
+#        - RequestTime=hello, world
+#        predicates:
+#        - After=2017-01-20T17:42:47.789-07:00[America/Denver]
+#  profiles: elapse_route
+spring:
+  application:
+    name: gateway-limiter
+  cloud:
+    gateway:
+      routes:
+      - id: limit_route
+        uri: http://httpbin.org:80/
+        predicates:
+        - Path=/get
+        #- After=2017-01-20T17:42:47.789-07:00[America/Denver]
+        filters:
+        - name: RequestRateLimiter
+          args:
+            key-resolver: '#{@urlKeyResolver}'    #用户限流策略的类
+            redis-rate-limiter.replenishRate: 1   #每秒填充速率
+            redis-rate-limiter.burstCapacity: 1   #总容量大小
+redis:
+  host: localhost
+  port: 6379
+  database: 0
+
+
+

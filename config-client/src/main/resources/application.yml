@@ -1,0 +1,19 @@
+eureka:
+  client:
+    serviceUrl:
+       defaultZone: http://localhost:8761/eureka/
+#会取远程仓库同名文件(spring.application.name)，远程配置文件会覆盖本地文件
+spring:
+  application:
+    name: config-client-dev
+  cloud:
+    config:
+      label: master
+      profile: dev
+     # uri: http://localhost:8888/
+      discovery:
+        enabled: true   #是否从配置中心读取文件
+        service-id: config-server   #配置中心的ID
+server:
+  port: 8881
+
